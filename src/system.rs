@@ -1,5 +1,5 @@
 use crate::world::*;
-use crate::math::distance;
+use crate::math::*;
 use crate::components::*;
 
 
@@ -45,4 +45,21 @@ pub fn bring_out_your_dead(world: &mut World) {
     for entity in dead_entities {
         world.despawn(entity);
     }
+}
+
+pub fn ai_chase(world: &mut World) {
+
+    let (key, val) = world.players.iter().next().unwrap();
+    
+    let Some(pos) = world.positions.get_mut(key) else {return;};
+
+    let movables: Vec<Entity>
+
+    for (current_enm, enemy_vel) in world.velocities {
+        if world.enemies.contains_key(current_enm) {
+            movables.push(current_enm);
+        }
+    } 
+
+
 }
