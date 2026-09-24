@@ -16,14 +16,14 @@ fn run_combat(world: &mut World) {
     }
 
     for (ent, atk) in world.attacks {
-        combat_positions.insert(
+        combat_attacks.insert(
             ent,
             atk,
         );
     }
 
     for (ent, def) in world.defenses {
-        combat_positions.insert(
+        combat_defenses.insert(
             ent,
             def,
         );
