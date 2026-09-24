@@ -13,17 +13,6 @@ pub fn update_movement(world: &mut World) {
     }
 }
 
-pub fn do_damage(world: &mut World, attacker: &Entity, target: &Entity) {
-
-    // pos checks
-    let Some(pos_a) = world.positions.get(attacker) else {return;};
-    let Some(pos_t) = world.positions.get(target) else {return;};
-
-    if distance(pos_a, pos_t) < 10.0 {
-        let Some(health) = world.healths.get_mut(target) else {return;};
-        health.hp -= 10;
-    } 
-}
 
 pub fn death_check(world: &mut World) {
     let mut dead_entities = Vec::new();

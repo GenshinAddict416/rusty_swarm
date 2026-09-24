@@ -3,10 +3,12 @@ mod world;
 mod system;
 mod math;
 mod constants;
+mod combat;
 
 use components::*;
 use system::*;
 use world::*;
+use combat::*;
 
 use std::collections::HashMap;
 
@@ -88,7 +90,7 @@ fn main() {
     -------------------------------
     */
 
-    while (i < 60) {
+    while i < 60 {
         ai_chase(&mut world);
         update_movement(&mut world);
         // do_damage(&mut world, &player, &goblin);
