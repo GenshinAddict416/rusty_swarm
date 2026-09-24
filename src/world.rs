@@ -18,7 +18,9 @@ pub struct World {
     pub healths: HashMap<Entity, Health>,
     pub deaths: HashMap<Entity, Dead>,
     pub players: HashMap<Entity, Player>,
-    pub enemies: HashMap<Entity, Enemy>
+    pub enemies: HashMap<Entity, Enemy>,
+    pub attacks: HashMap<Entity, Attack>,
+    pub defenses: HashMap<Entity, Defense>,
 }
 
 impl World {

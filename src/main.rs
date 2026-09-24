@@ -2,6 +2,7 @@ mod components;
 mod world;
 mod system;
 mod math;
+mod constants;
 
 use components::*;
 use system::*;
@@ -31,7 +32,7 @@ fn main() {
     world.velocities.insert(
         player,
         Velocity {
-            x: 50.0 / 60.0, // pixels per second
+            x: constants::PLAYER_SPEED,
             y: 0.0,
         },
     );
@@ -46,14 +47,14 @@ fn main() {
     world.positions.insert(
         goblin,
         Position {
-            x: 100.0,
+            x: 25.0,
             y: 0.0,
         },
     );
     world.velocities.insert(
         goblin,
         Velocity {
-            x: -0.5,
+            x: 0.0,
             y: 0.0,
         },
     );
@@ -71,21 +72,35 @@ fn main() {
         println!("Player has no position components!");
     }
 
-    if let Some(vel) = world.velocities.get(&player) {
-        println!("{:?} moving at {}, {}", player, vel.x, vel.y);
+    if let Some(vel) = world.positions.get(&goblin) {
+        println!("{:?} at {}, {}", goblin, vel.x, vel.y);
     } else {
-        println!("Player has no velocity components!");
+        println!("Goblin has no velocity components!");
     }
 
     let mut i = 0;
 
+    /*
+    -------------------------------
+    GAME LOOP
+    -------------------------------
+    */
+
     while (i < 60) {
+        ai_chase(&mut world);
         update_movement(&mut world);
-        do_damage(&mut world, &player, &goblin);
+        // do_damage(&mut world, &player, &goblin);
         death_check(&mut world);
         bring_out_your_dead(&mut world);
         i += 1;
         println!("tick {}", i);
+        if let Some(pos) = world.positions.get(&player) {
+            println!("Player: ({}, {})", pos.x, pos.y);
+        }
+
+        if let Some(pos) = world.positions.get(&goblin) {
+            println!("Goblin: ({}, {})", pos.x, pos.y)
+        }
     }
 
     if let Some(pos) = world.positions.get(&player) {
