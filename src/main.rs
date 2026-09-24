@@ -19,6 +19,8 @@ fn main() {
         deaths: HashMap::new(),
         enemies: HashMap::new(),
         players: HashMap::new(),
+        attacks: HashMap::new(),
+        defenses: HashMap::new()
     };
 
     let player = world.spawn(EntityType::Player);
