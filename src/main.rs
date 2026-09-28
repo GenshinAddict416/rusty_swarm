@@ -25,48 +25,20 @@ fn main() {
         defenses: HashMap::new()
     };
 
-    let player = world.spawn(EntityType::Player);
-    world.positions.insert(
-        player,
-        Position {
-            x: 0.0,
-            y: 0.0,
-        },
-    );
-    world.velocities.insert(
-        player,
-        Velocity {
-            x: constants::PLAYER_SPEED,
-            y: 0.0,
-        },
-    );
-    world.healths.insert(
-        player,
-        Health {
-            hp: 100,
-        }
+    let player = world.spawn(
+        EntityType::Player, 
+        Position { x: 50.0, y: 50.0 },
+        Health { hp: 100 },
+        Attack { atk: 50 },
+        Defense { def: 30 },
     );
 
-    let goblin = world.spawn(EntityType::Enemy);
-    world.positions.insert(
-        goblin,
-        Position {
-            x: 25.0,
-            y: 0.0,
-        },
-    );
-    world.velocities.insert(
-        goblin,
-        Velocity {
-            x: 0.0,
-            y: 0.0,
-        },
-    );
-    world.healths.insert(
-        goblin,
-        Health {
-            hp: 50,
-        }
+    let goblin = world.spawn(
+        EntityType::Enemy,
+        Position { x: 20.0, y: 50.0},
+        Health { hp: 50 },
+        Attack { atk: 40 },
+        Defense { def: 20 },
     );
 
     
@@ -91,11 +63,7 @@ fn main() {
     */
 
     while i < 60 {
-        ai_chase(&mut world);
-        update_movement(&mut world);
-        // do_damage(&mut world, &player, &goblin);
-        death_check(&mut world);
-        bring_out_your_dead(&mut world);
+        gameloop(&mut world);
         i += 1;
         println!("tick {}", i);
         if let Some(pos) = world.positions.get(&player) {
@@ -119,4 +87,13 @@ fn main() {
         println!("Goblin has no position components!");
     }
 
+}
+
+
+pub fn gameloop(world: &mut World) {
+    ai_chase(world);
+    update_movement(world);
+    run_combat(world);
+    death_check(world);
+    bring_out_your_dead(world);
 }
