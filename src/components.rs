@@ -28,3 +28,9 @@ pub struct Dead;
 
 pub struct Player;
 pub struct Enemy;
+
+pub struct Cooldown {
+    pub cd: u32,
+    pub active: u32
+}
+

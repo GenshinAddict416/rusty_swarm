@@ -25,6 +25,7 @@ pub fn death_check(world: &mut World) {
 
     for entity in dead_entities {
         world.deaths.insert(entity, Dead);
+        println!("Entity {:?} died", entity)
     }
 }
 

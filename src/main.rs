@@ -22,7 +22,8 @@ fn main() {
         enemies: HashMap::new(),
         players: HashMap::new(),
         attacks: HashMap::new(),
-        defenses: HashMap::new()
+        defenses: HashMap::new(),
+        cooldowns: HashMap::new(),
     };
 
     let player = world.spawn(
@@ -36,7 +37,7 @@ fn main() {
     let goblin = world.spawn(
         EntityType::Enemy,
         Position { x: 20.0, y: 50.0},
-        Health { hp: 50 },
+        Health { hp: 1500 },
         Attack { atk: 40 },
         Defense { def: 20 },
     );
@@ -62,7 +63,7 @@ fn main() {
     -------------------------------
     */
 
-    while i < 60 {
+    while i < 600 {
         gameloop(&mut world);
         i += 1;
         println!("tick {}", i);

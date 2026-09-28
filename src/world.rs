@@ -21,6 +21,7 @@ pub struct World {
     pub enemies: HashMap<Entity, Enemy>,
     pub attacks: HashMap<Entity, Attack>,
     pub defenses: HashMap<Entity, Defense>,
+    pub cooldowns: HashMap<Entity, Cooldown>,
 }
 
 impl World {
@@ -49,11 +50,15 @@ impl World {
             EntityType::Player => {
             self.players.insert(entity, Player);
             self.velocities.insert(entity, Velocity {x: 0.0 , y: 0.0});
+            self.cooldowns.insert(entity, Cooldown { cd: 10, active: 0 });
             }
 
             EntityType::Enemy => {
             self.enemies.insert(entity, Enemy);
             self.velocities.insert(entity, Velocity {x: 0.0 , y: 0.0});
+            self.cooldowns.insert(entity, Cooldown { cd: 20, active: 0 });
+            
+
             }
             }
         self.next_entity += 1;
