@@ -18,26 +18,57 @@ pub struct World {
     pub healths: HashMap<Entity, Health>,
     pub deaths: HashMap<Entity, Dead>,
     pub players: HashMap<Entity, Player>,
-    pub enemies: HashMap<Entity, Enemy>
+    pub enemies: HashMap<Entity, Enemy>,
+    pub attacks: HashMap<Entity, Attack>,
+    pub defenses: HashMap<Entity, Defense>,
+    pub cooldowns: HashMap<Entity, Cooldown>,
 }
 
 impl World {
-    pub fn spawn(&mut self, ent_type: EntityType) -> Entity {
+    pub fn spawn(&mut self, 
+        ent_type: EntityType, 
+        init_pos: Position, 
+        init_health: Health, 
+        init_atk: Attack,
+        init_def: Defense,
+    ) -> Entity {
+
         let entity = Entity(self.next_entity);
+        self.positions.insert(
+            entity, init_pos
+        );
+        self.healths.insert(
+            entity, init_health
+        );
+        self.attacks.insert(
+            entity, init_atk
+        );
+        self.defenses.insert(
+            entity, init_def
+        );
         match ent_type {
             EntityType::Player => {
             self.players.insert(entity, Player);
+            self.velocities.insert(entity, Velocity {x: 0.0 , y: 0.0});
+            self.cooldowns.insert(entity, Cooldown { cd: 10, active: 0 });
             }
 
             EntityType::Enemy => {
             self.enemies.insert(entity, Enemy);
+            self.velocities.insert(entity, Velocity {x: 0.0 , y: 0.0});
+            self.cooldowns.insert(entity, Cooldown { cd: 20, active: 0 });
+            
+
             }
             }
         self.next_entity += 1;
+        println!("Entity {:?} created!", entity);
         entity
     }
 
     pub fn despawn(&mut self, entity: Entity) {
+
+        println!("Entity {:?} despawned", entity);
         self.positions.remove(&entity);
         self.velocities.remove(&entity);
         self.healths.remove(&entity);
@@ -45,5 +76,10 @@ impl World {
 
         self.players.remove(&entity);
         self.enemies.remove(&entity);
+
+        self.healths.remove(&entity);
+        self.defenses.remove(&entity);
+
+        
     }
 }
