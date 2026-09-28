@@ -39,7 +39,7 @@ pub fn bring_out_your_dead(world: &mut World) {
 }
 
 pub fn ai_chase(world: &mut World) {
-    let (player_key, _) = world.players.iter().next().unwrap();
+    let Some((player_key, _)) = world.players.iter().next() else {return;};
     
     let player_pos = match world.positions.get(player_key) {
         Some(pos) => (pos.x, pos.y),
