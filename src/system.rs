@@ -1,14 +1,15 @@
 use crate::world::*;
-use crate::math::*;
 use crate::components::*;
 use crate::constants;
+use macroquad::prelude::*;
 
 
-pub fn update_movement(world: &mut World) {
+
+pub fn update_movement(world: &mut World, dt: f32) {
     for (name, velocity) in &mut world.velocities {
         if let Some(pos) = world.positions.get_mut(name) {
-            pos.x += velocity.x;
-            pos.y += velocity.y;
+            pos.x += velocity.x * dt;
+            pos.y += velocity.y * dt;
         }
     }
 }
@@ -39,13 +40,12 @@ pub fn bring_out_your_dead(world: &mut World) {
 }
 
 pub fn ai_chase(world: &mut World) {
-    let Some((player_key, _)) = world.players.iter().next() else {return;};
-    
-    let player_pos = match world.positions.get(player_key) {
-        Some(pos) => (pos.x, pos.y),
-        None => return,
-    };
+    // get player's pos and put it in a Vec2
+    let Some((player_key, _)) = world.players.iter().next() else { return; };
+    let Some(p_pos) = world.positions.get(player_key) else { return; };
+    let player_vec = Vec2::new(p_pos.x, p_pos.y);
 
+    // make borrow checker happy
     let mut movables: Vec<Entity> = Vec::new();
     for (current_enm, _) in &world.velocities {
         if world.enemies.contains_key(current_enm) {
@@ -53,15 +53,43 @@ pub fn ai_chase(world: &mut World) {
         }
     }
 
+    // 3. Update each enemy vector toward the player
     for enm in movables {
         let Some(enm_pos) = world.positions.get(&enm) else { continue; };
+        let enemy_vec = Vec2::new(enm_pos.x, enm_pos.y);
         
-        let x_mod = sign(enm_pos.x, player_pos.0);
-        let y_mod = sign(enm_pos.y, player_pos.1);
+        // Calculate the raw distance/direction vector from enemy to player
+        let to_player = player_vec - enemy_vec;
+        
+        // Normalize it so the length becomes exactly 1.0 diagonally or horizontally
+        let move_dir = to_player.normalize_or_zero();
         
         if let Some(enm_vel) = world.velocities.get_mut(&enm) {
-            enm_vel.x = x_mod * constants::ENEMY_SPEED;
-            enm_vel.y = y_mod * constants::ENEMY_SPEED;
+            // Scale by your enemy speed constant
+            enm_vel.x = move_dir.x * constants::ENEMY_SPEED;
+            enm_vel.y = move_dir.y * constants::ENEMY_SPEED;
+        }
+    }
+}
+
+
+pub fn render_world(world: &World) {
+    for (entity, pos) in &world.positions {
+        if world.players.contains_key(entity) {
+            draw_circle(pos.x, pos.y, 10.0, BLUE);
+        }
+
+        if world.enemies.contains_key(entity) {
+            draw_circle(pos.x, pos.y, 10.0, RED);
+        }
+        if let Some(health) = world.healths.get(entity) {
+            draw_text(
+                &health.hp.to_string(),
+                pos.x - 10.0,
+                pos.y - 15.0,
+                20.0, 
+                GREEN
+            ); 
         }
     }
 }
