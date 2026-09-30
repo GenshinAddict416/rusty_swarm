@@ -7,14 +7,14 @@ pub fn distance(a: &Position, b: &Position) -> f32 {
     (dx * dx + dy * dy).sqrt()
 }
 
-pub fn sign(current: f32, target: f32) -> f32 {
-    if (current - target) > 0.0 {
-        return -1.0;
-    }
-    if (current - target) < 0.0 {
-        return 1.0;
-    }
-    else {
-        0.0
-    }
-}
+// pub fn sign(current: f32, target: f32) -> f32 {
+//     if (current - target) > 0.0 {
+//         return -1.0;
+//     }
+//     if (current - target) < 0.0 {
+//         return 1.0;
+//     }
+//     else {
+//         0.0
+//     }
+// }

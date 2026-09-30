@@ -12,7 +12,10 @@ use combat::*;
 
 use std::collections::HashMap;
 
-fn main() {
+use macroquad::prelude::*;
+
+#[macroquad::main("ECS")]
+async fn main() {
     let mut world = World {
         next_entity: 0,
         positions: HashMap::new(),
@@ -30,32 +33,23 @@ fn main() {
         EntityType::Player, 
         Position { x: 50.0, y: 50.0 },
         Health { hp: 100 },
-        Attack { atk: 50 },
-        Defense { def: 30 },
+        Attack { atk: 20 },
+        Defense { def: 90 },
     );
 
-    let goblin = world.spawn(
-        EntityType::Enemy,
-        Position { x: 20.0, y: 50.0},
-        Health { hp: 1500 },
-        Attack { atk: 40 },
-        Defense { def: 20 },
-    );
-
-    
-    if let Some(pos) = world.positions.get(&player) {
-        println!("{:?} at {}, {}", player, pos.x, pos.y);
-    } else {
-        println!("Player has no position components!");
+    for i in 0..10 {
+        world.spawn(
+            EntityType::Enemy,
+            Position {
+                x: 100.0 + i as f32 * 30.0,
+                y: 100.0,
+            },
+            Health { hp: 50 },
+            Attack { atk: 10 },
+            Defense { def: 0 },
+        );
     }
 
-    if let Some(vel) = world.positions.get(&goblin) {
-        println!("{:?} at {}, {}", goblin, vel.x, vel.y);
-    } else {
-        println!("Goblin has no velocity components!");
-    }
-
-    let mut i = 0;
 
     /*
     -------------------------------
@@ -63,37 +57,46 @@ fn main() {
     -------------------------------
     */
 
-    while i < 600 {
-        gameloop(&mut world);
-        i += 1;
-        println!("tick {}", i);
-        if let Some(pos) = world.positions.get(&player) {
-            println!("Player: ({}, {})", pos.x, pos.y);
+    loop {
+        clear_background(BLACK);
+        let dt = get_frame_time();
+
+        if let Some(vel) = world.velocities.get_mut(&player) {
+            let mut input_dir = Vec2::ZERO;
+
+            if is_key_down(KeyCode::W) {
+                input_dir.y -= 1.0;
+            }
+            if is_key_down(KeyCode::S) {
+                input_dir.y += 1.0;
+            }
+            if is_key_down(KeyCode::A) {
+                input_dir.x -= 1.0;
+            }
+            if is_key_down(KeyCode::D) {
+                input_dir.x += 1.0;
+            }
+            // 2. Normalize the vector so its diagonal length is exactly 1.0
+            // .normalize_or_zero() safely handles the case where no keys are pressed without crashing
+            let move_dir = input_dir.normalize_or_zero();
+
+            // 3. Scale by your actual player speed constant
+            vel.x = move_dir.x * constants::PLAYER_SPEED;
+            vel.y = move_dir.y * constants::PLAYER_SPEED;
         }
 
-        if let Some(pos) = world.positions.get(&goblin) {
-            println!("Goblin: ({}, {})", pos.x, pos.y)
-        }
-    }
+        gameloop(&mut world, dt);
 
-    if let Some(pos) = world.positions.get(&player) {
-        println!("{:?} at {}, {}", player, pos.x, pos.y);
-    } else {
-        println!("Player has no position components!");
-    }
+        render_world(&world);
 
-    if let Some(pos) = world.positions.get(&goblin) {
-        println!("{:?} at {}, {}", goblin, pos.x, pos.y);
-    } else {
-        println!("Goblin has no position components!");
+        next_frame().await;
     }
-
 }
 
 
-pub fn gameloop(world: &mut World) {
+pub fn gameloop(world: &mut World, dt: f32) {
     ai_chase(world);
-    update_movement(world);
+    update_movement(world, dt);
     run_combat(world);
     death_check(world);
     bring_out_your_dead(world);

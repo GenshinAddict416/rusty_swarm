@@ -4,6 +4,7 @@ use crate::world::*;
 // called in game loop after updating positions
 pub fn run_combat(world: &mut World) {
 
+    update_cooldown(world);
     
     let mut attackers: Vec<Entity> = Vec::new();
 
@@ -47,8 +48,6 @@ pub fn do_damage(world: &mut World, attacker: &Entity, target: &Entity) {
         return;
     }
 
-    update_cooldown(world);
-
     let Some(cooldown) =
         world.cooldowns.get_mut(attacker)
     else { return; };
@@ -66,17 +65,18 @@ pub fn do_damage(world: &mut World, attacker: &Entity, target: &Entity) {
     let Some(def) = world.defenses.get(target) else {return;};
 
     // if within range of attack (the sqrt of 2)
-    if distance(pos_a, pos_t) < 2_f32.sqrt() && cooldown.active == 0 {
+    if distance(pos_a, pos_t) < 20.0 && cooldown.active == 0 {
         // fetch health and subtract atk - def ONLY IF we are subtracting health
         let Some(health) = world.healths.get_mut(target) else {return;};
-        health.hp -= atk.atk.saturating_sub(def.def);
+        let mut damage = atk.atk.saturating_sub(def.def);
+        if damage < 1 {damage = 1;}
+        health.hp -= damage.abs();
         
         println!(
-            "{:?} hit {:?} for {} damage with cooldown {}",
+            "{:?} hit {:?} for {} damage",
             attacker,
             target,
-            atk.atk.saturating_sub(def.def),
-            cooldown.active,
+            damage.abs(),
         );
         cooldown.active = cooldown.cd;
     }

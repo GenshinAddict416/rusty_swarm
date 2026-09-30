@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::components::*;
+use crate::constants::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Entity(pub u32);
@@ -50,13 +51,13 @@ impl World {
             EntityType::Player => {
             self.players.insert(entity, Player);
             self.velocities.insert(entity, Velocity {x: 0.0 , y: 0.0});
-            self.cooldowns.insert(entity, Cooldown { cd: 10, active: 0 });
+            self.cooldowns.insert(entity, Cooldown { cd: PLAYER_CD, active: 0 });
             }
 
             EntityType::Enemy => {
             self.enemies.insert(entity, Enemy);
             self.velocities.insert(entity, Velocity {x: 0.0 , y: 0.0});
-            self.cooldowns.insert(entity, Cooldown { cd: 20, active: 0 });
+            self.cooldowns.insert(entity, Cooldown { cd: ENEMY_CD, active: 0 });
             
 
             }
